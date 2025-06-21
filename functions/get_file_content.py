@@ -17,11 +17,11 @@ def get_file_content(working_directory, file_path):
 
         try:
             with open(full_path, "r", encoding="utf-8") as f:
-                content = f.read(MAX_CHARS + 1)
+                content = f.read(MAX_CHARS)
         except UnicodeDecodeError:
             return "Error: This is not a valid text file (not UTF-8)."
         
-        if len(content) > MAX_CHARS:
+        if len(content) == MAX_CHARS:
             return content[:MAX_CHARS] + f'[...File "{full_path}" truncated at 10000 characters]'
         else:
             return content
