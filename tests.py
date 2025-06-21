@@ -1,20 +1,22 @@
-from functions.write_file import write_file
-
+from functions.run_python import run_python_file
 
 def test():
 
-    result = write_file("calculator", "lorem.txt", "wait, this isn't lorem ipsum")
-    print('result for writing "wiat, this isnt lorem ipsum" to file: "lorem.txt"')
+    result = run_python_file("calculator", "main.py")
+    print("result for running main.py from calculator dir")
     print(result)
 
-    result = write_file("calculator", "pkg/morelorem.txt", "lorem ipsum dolor sit amet")
-    print('result for writing "lorem ipsum dolor sit amet" to file: "pkg/morelorem.txt"')
+    result = run_python_file("calculator", "tests.py")
+    print("result for running test.py from calculator dir")
     print(result)
 
-    result = write_file("calculator", "/tmp/temp.txt", "this should not be allowed")
-    print('result for writing "this should not be allowed" to file: "/tmp/temp.txt"')
+    result = run_python_file("calculator", "../main.py")
+    print("result for running '../main.py' from calculator dir")
     print(result)
 
+    result = run_python_file("calculator", "nonexistent.py")
+    print("result for running nonexistent.py from calculator dir")
+    print(result)
 
 if __name__ == "__main__":
     test()
