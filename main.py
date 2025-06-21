@@ -3,32 +3,13 @@ import sys
 from google import genai
 from google.genai import types
 from dotenv import load_dotenv
-from functions.get_files_info import get_files_info
 
+from prompts import system_prompt
+from call_function import available_functions
 
 def main():
     load_dotenv()
 
-    schema_get_files_info = types.FunctionDeclaration(
-    name="get_files_info",
-    description="Lists files in the specified directory along with their sizes, constrained to the working directory.",
-    parameters=types.Schema(
-        type=types.Type.OBJECT,
-        properties={
-            "directory": types.Schema(
-                type=types.Type.STRING,
-                description="The directory to list files from, relative to the working directory. If not provided, lists files in the working directory itself.",
-                ),
-            },
-        ),
-    )
-
-    available_functions = types.Tool(
-        function_declarations=[
-            schema_get_files_info,
-            ]
-    )
-        
     verbose = "--verbose" in sys.argv
     args = [arg for arg in sys.argv[1:] if not arg.startswith("--")]
 
@@ -42,15 +23,6 @@ def main():
     client = genai.Client(api_key=api_key)
 
     user_prompt = " ".join(args)
-    system_prompt = """
-    You are a helpful AI coding agent.
-
-    When a user asks a question or makes a request, make a function call plan. You can perform the following operations:
-
-    - List files and directories
-
-    All paths you provide should be relative to the working directory. You do not need to specify the working directory in your function calls as it is automatically injected for security reasons.
-    """
 
     if verbose:
         print(f"User prompt: {user_prompt}\n")
@@ -75,9 +47,6 @@ def generate_content(client, messages, system_prompt, available_functions, verbo
     if verbose:
         print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
         print(f"Response tokens: {response.usage_metadata.candidates_token_count}\n")
-
-    # print("Response:")
-    # print(response.text)
 
     res_fc = response.function_calls
     if res_fc:
