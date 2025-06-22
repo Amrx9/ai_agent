@@ -39,7 +39,7 @@ def main():
             sys.exit(1)
 
         try:
-            final_response = generate_content(client, messages, verbose)
+            final_response = generate_content(client, messages,system_prompt, available_functions, verbose)
             if final_response:
                 print("Final response:")
                 print(final_response)
