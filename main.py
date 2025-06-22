@@ -5,7 +5,7 @@ from google.genai import types
 from dotenv import load_dotenv
 
 from prompts import system_prompt
-from call_function import available_functions
+from call_function import available_functions, call_function
 
 def main():
     load_dotenv()
@@ -50,8 +50,20 @@ def generate_content(client, messages, system_prompt, available_functions, verbo
 
     res_fc = response.function_calls
     if res_fc:
-        for func_call in res_fc:
-            return f"Calling function: {func_call.name}({func_call.args})"
+        function_responses = []
+        for function_call_part in res_fc:
+            function_call_result = call_function(function_call_part, verbose)
+            if (
+                not function_call_result.parts
+                or not function_call_result.parts[0].function_response
+            ):
+                raise Exception("empty function call result")
+            if verbose:
+                print(f"-> {function_call_result.parts[0].function_response.response}")
+            function_responses.append(function_call_result.parts[0])
+
+    if not function_responses:
+        raise Exception("no function responses generated, exiting.")
     else:
         return response.text
     
